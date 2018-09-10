@@ -1,0 +1,28 @@
+sq=[]
+for x in range(1:10):
+	sq_list.append(x**2)
+print(sq_list)
+
+Can also be written as
+sq_list=[x**2 for x in range(1:10)]
+
+para=['There was a fox.','It was brown in color.']
+single_word_list=[]
+for sentence in para:
+	for word in sentence.split():
+		single_word_list.append(word)
+
+print(single_word_list)
+
+single_word_list = [word for sentence in paragraph for word in sentence.split()]
+
+squared_dictionary = {num : num**2 for num in range(0,25)}
+
+strudents_data = {1:['illiyas',29],2:['hhhh',33]}
+names_dict={}
+for roll_num,details in students_data.items():
+	if roll_numm%2==0:
+		names_dict[roll_num]=details[0]
+print(names_dict)
+
+names_comp= {rol_num : details[0] for roll_num,details in student_data.item() if roll_num%2==0} 

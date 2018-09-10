@@ -1,0 +1,32 @@
+first_list = [2,3,4]
+priint(list(map(lambda x: x**2,first_list)))
+
+sum(list(map(lambda x:1 if x[0]=='S' else 0, input_list)))
+
+sums_list = [3,5,7]
+sums_list2 = [1,2,3]
+print(list(map(lambda x,y:x+y,sums_list,sum_list2)))
+
+list_names=['illiyas','dasd']
+list_names1=['mohammed','asfas']
+proper=lambda x,y: x+y
+print(list(map(proper,list_names,list_names1))
+
+name = lambda x,y: x+" "+y
+print(list(map(name,first_name,last_name)))
+print(list(map(lambda x,y: x+" "+y,first_name,last_name)))
+
+#Filters:
+divdby3 = lambda x: x%3==0
+my_list=[3,4,5,6,7,8,9]
+print(list(filter(divby3,my_list))
+[3,6,9]
+
+#Reduce
+from functools import reduce
+q = reduce(lambda x,y:x+y,range(1,4))
+print(q)
+6
+
+list_num=[22,45,32,20]
+print(reduce(lambda x,y:x if x>y else y, list_num)

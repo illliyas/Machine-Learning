@@ -1,0 +1,79 @@
+
+String to List
+.split()
+List to String
+''.join(l1)
+
+Dictionaries
+key-value pair 
+{}
+bio_data={Name:illiyas,'Age':30}
+bio_data['Name']
+bio_data.get('Name','NA')
+bio_data['Age'] = 29
+bio_date['Company']='Emirates'
+bio_date['Edu']=['BE','PG']
+print('Company' in bio_data)
+True
+print(list(bio_data.values())
+del bio_data['Company']
+bio_data={Name:['illiyas','fsfs'],'Age':30}
+key,val = students_data.items()
+
+def group_by_owners(files):
+    result = {}
+    for file, owner in files.items():  # use files.iteritems() on Python 2.x
+        result[owner] = result.get(owner, []) + [file]  # you can use setdefault(), too
+    return result
+
+files = {
+    'Input.txt': 'Randy',
+    'Code.py': 'Stan',
+    'Output.txt': 'Randy'
+}
+
+print(group_by_owners(files))
+# {'Stan': ['Code.py'], 'Randy': ['Output.txt', 'Input.txt']}
+Sets
+{}
+l1=['a','a',b',c'=
+s1=set(l1)
+{'a','b','c'}
+
+s1.intersection(s2)
+s1.union(s2)
+s1.difference(s2)
+
+s1='Mary has a little lamb'
+n,alph = enumerate(s1)
+print(n,alph)
+0 M
+1 a
+
+#Arrays
+a=np.array([1,2,3,4],[2,3,4,5])
+np.arange(1,5)
+a.reshape(4,-1) #-1 means "Whatever dimention it needed"
+#Transposing an array
+some_array.T
+
+#Stacking (vertical staking)
+np.vstack((array1,array2))
+
+#horizontral stacking
+np.hstack((array1,aray2))
+Input
+[[1,2,3,4],[6,7,8,5],[4,5,3,5],[3,4,5,6]]
+Solution output
+[[1 2 3 4 4 5 3 5]
+ [6 7 8 5 3 4 5 6]]
+Expected output
+[[1 2 3 4 4 5 3 5]
+ [6 7 8 5 3 4 5 6]]
+
+NumPy provides the np.linalg package to apply common linear algebra operations, such as:
+
+np.linalg.inv: Inverse of a matrix
+np.linalg.det: Determinant of a matrix
+np.linalg.eig: Eigenvalues and eigenvectors of a matrix
+Also, you can multiply matrices using np.dot(a, b).

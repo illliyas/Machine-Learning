@@ -1,0 +1,5 @@
+Converting date to YYYYMMDD
+flights2.scheduletimedepartureutc.apply(lambda x: x.strftime('%Y%m%d')).astype(int)
+
+To find rolling mean
+ pd.rolling_mean(train_original['Count'], window=24)

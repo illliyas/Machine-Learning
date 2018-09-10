@@ -1,0 +1,23 @@
+def addition(*args): #*args means funcation can take any number of arguments
+	print(args)
+	return(sum(args))
+
+print(addition(4,5,6,7))
+print(addition(4,5))
+
+string_to_list = lambda x: x.split()
+print(string_to_list)
+
+product = lambda x,y: x*y
+print(product(3,4))
+
+greater = lambda a,b: a if a > b else b
+
+print(greater(a,b))
+
+min = (lambda x, y: x if x < y else y)
+min(101*99, 102*98)
+
+name = lambda x,y: x+" "+y
+print(list(map(name,first_name,last_name)))
+print(list(map(lambda x,y: x+" "+y,first_name,last_name)))

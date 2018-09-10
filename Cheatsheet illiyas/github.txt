@@ -1,0 +1,4 @@
+https://github.com/TarrySingh
+https://github.com/jupyter/jupyter/wiki/A-gallery-of-interesting-Jupyter-Notebooks
+https://github.com/nuhu122014/pandas_exercises
+https://github.com/zhiwehu/Python-programming-exercises/blob/master/100%2B%20Python%20challenging%20programming%20exercises.txt

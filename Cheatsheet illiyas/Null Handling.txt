@@ -1,0 +1,63 @@
+df.isnull().sum()
+
+The functions any() and all() are quite useful to identify rows and columns having missing values:
+
+any() returns True when at least one value satisfies a condition (equivalent to logical or)
+all() returns True when all the values satisfy a condition (equivalent to logical and)
+
+# above is equivalent to axis=0 (by default, any() operates on columns)
+df.isnull().any(axis=0)
+# rows having at least one missing value
+df.isnull().any(axis=1)
+
+# rows having all missing values
+df.isnull().all(axis=1)
+# sum it up to check how many rows have all missing values
+df.isnull().all(axis=1).sum()
+
+# sum of misisng values in each row
+df.isnull().sum(axis=1)
+
+Treating Missing Values in Columns
+# summing up the missing values (column-wise)
+round(100*(df.isnull().sum()/len(df.index)), 2)
+
+# removing the three columns
+df = df.drop('BuildingArea', axis=1)
+df = df.drop('YearBuilt', axis=1)
+df = df.drop('CouncilArea', axis=1)
+
+round(100*(df.isnull().sum()/len(df.index)), 2)
+
+Treating Missing Values in Rows
+#Finding out more than 5 nulls in rows
+df[df.isnull().sum(axis=1) > 5]
+
+# count the number of rows having > 5 missing values
+# use len(df.index)
+len(df[df.isnull().sum(axis=1) > 5].index)
+
+# 4278 rows have more than 5 missing values
+# calculate the percentage
+100*(len(df[df.isnull().sum(axis=1) > 5].index) / len(df.index))
+
+# retaining the rows having <= 5 NaNs
+df = df[df.isnull().sum(axis=1) <= 5]
+
+# look at the summary again
+round(100*(df.isnull().sum()/len(df.index)), 2)
+
+# removing NaN Price rows
+df = df[~np.isnan(df['Price'])]
+
+round(100*(df.isnull().sum()/len(df.index)), 2)
+
+# imputing Lattitude and Longitude by mean values
+df.loc[np.isnan(df['Lattitude']), ['Lattitude']] = df['Lattitude'].mean()
+df.loc[np.isnan(df['Longtitude']), ['Longtitude']] = df['Longtitude'].mean()
+
+round(100*(df.isnull().sum()/len(df.index)), 2)
+
+# imputing NaNs by 2.0
+df.loc[pd.isnull(df['Car']), ['Car']] = 2
+round(100*(df.isnull().sum()/len(df.index)), 2)

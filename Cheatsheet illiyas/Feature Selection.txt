@@ -1,0 +1,3 @@
+SelectFromModel - https://www.kaggle.com/ayaseeli/feature-selection
+Boruta https://www.kaggle.com/tilii7/boruta-feature-elimination
+https://www.kaggle.com/ramakrishnar/an-exploratory-study-on-feature-selection/notebook

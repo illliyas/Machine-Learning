@@ -1,0 +1,5 @@
+https://www.kaggle.com/serigne/stacked-regressions-top-4-on-leaderboard
+https://www.kaggle.com/pmarcelino/comprehensive-data-exploration-with-python
+https://www.kaggle.com/juliencs/a-study-on-regression-applied-to-the-ames-dataset
+https://www.kaggle.com/apapiu/regularized-linear-models
+https://www.kaggle.com/fabiendaniel/predicting-flight-delays-tutorial/notebook

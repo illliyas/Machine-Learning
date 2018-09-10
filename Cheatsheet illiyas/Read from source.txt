@@ -1,0 +1,10 @@
+#To read from website:
+BeautifulSoup for html of a website
+
+#To read from RestAPI
+To read data from API
+1. request.get read the REST-API URL
+2. Get the json in response
+3.Load json into dictionary
+4. Get the lat and long
+

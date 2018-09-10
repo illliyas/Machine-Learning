@@ -1,0 +1,17 @@
+import re
+
+currency=['1200AED','AED130','USD1434','2343INR','3643','SFGKJ','ABC']
+r = re.compile("^[a-zA-Z]{3}\d{3}" )
+r1 = re.compile("^\d{1,}[a-zA-Z]{3}$" )
+newlist = list(filter(r.match, currency))
+newlist1 = list(filter(r1.match, currency)) # Read Note
+print(newlist + newlist1)
+
+import re
+at = re.compile(r"-", re.I)
+def count_hypen(string):
+    count = 0
+    for i in at.finditer(string):
+        count += 1
+    return count
+data["Segment_Count"] = data["FIRST_SEGMENTS_DTL"].map(count_hypen)
