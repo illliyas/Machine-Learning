@@ -1,3 +1,6 @@
+#To display in numbers and not as E+4
+pd.options.display.float_format = '{:,.2f}'.format
+
 https://www.kaggle.com/marcogdepinto/titanic-with-python-first-competition 
 train = pd.read_csv('titanic_train.csv') 
 test = pd.read_csv('titanic_test.csv') 
@@ -222,6 +225,8 @@ def GCC_COUNTRY_CHECK(string):
     else:
         return 'REGULAR'    
 data['GCC_COUNTRY_Grped']=data["COUNTRY NAME"].map(GCC_COUNTRY_CHECK)
+------------------
+dataTop25Items_unstack = dataTop25Items_unstack.applymap(lambda x: 0 if x<=0 else 1)
 ---------------------
 data['TICKETED FARE BASIS TYPE1']=data['TICKETED FARE BASIS'].str.split("/",expand=True)[0]
 data['TICKETED FARE BASIS TYPE2']=data['TICKETED FARE BASIS'].str.split("/",expand=True)[1]
@@ -242,3 +247,14 @@ print(y.value_counts(normalize=True)*100)
 data2=data1.set_index('REC_LOCATOR').CHILD_PNRS.str.split(',', expand=True).stack().reset_index('REC_LOCATOR')
 
 data['TOUR_CODE_IND'] = data.apply(lambda x: 1 if x['TOUR CODE']== x['ORIGINAL TOUR CODE'] else 0, axis=1)
+
+#rows to columns
+dataTop25Items_pivot = dataTop25Items[['Date','Item','Transaction']].pivot_table('Transaction', 'Date', 'Item')
+hot_encoded_df=data.groupby(['Transaction','Item'])['Item'].count().unstack().reset_index().fillna(0).set_index('Transaction')
+
+----------------------------------------
+data=pd.read_excel('GROUP_BKNG_PNR.xlsx')
+data1=data[['REC_LOCATOR','CHILD_PNRS']]
+data1.set_index('REC_LOCATOR',inplace=True)
+data1=data1.CHILD_PNRS.str.split(',',expand=True).stack().reset_index('REC_LOCATOR')
+data1.to_csv('Parent_Child.csv',index=False)

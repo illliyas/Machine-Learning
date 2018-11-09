@@ -129,6 +129,14 @@ sns.heatmap(pd.concat([df.loc[traindex, :], Survived], axis=1).corr(),
 ax.set_title("Correlation Plot")
 plt.show()
 
+# heat map
+plt.subplots(figsize=(20,15))
+ax = plt.axes()
+ax.set_title('Correlation Heatmap')
+corr = date3.corr()
+sns.heatmap(corr,
+           xticklabels=corr.columns.values,
+           yticklabels=corr.columns.values)
 -------------------------------
 Matplotlib
 fig, axs = plt.subplots(4,1)
@@ -139,3 +147,27 @@ weekly.Count.plot(figsize=(15,8), title= 'Weekly', fontsize=14, ax=axs[2])
 monthly.Count.plot(figsize=(15,8), title= 'Monthly', fontsize=14, ax=axs[3])
 
 plt.show()
+---------------------------
+PairPlot
+g = sns.pairplot(train[[u'Survived', u'Pclass', u'Sex', u'Age', u'Parch', u'Fare', u'Embarked',
+       u'FamilySize', u'Title']], hue='Survived', palette = 'seismic',size=1.2,diag_kind = 'kde',diag_kws=dict(shade=True),plot_kws=dict(s=10) )
+g.set(xticklabels=[])
+
+#crosstab stacked
+pd.crosstab(student_info.region,student_info.age_band).plot.barh(stacked=True)
+
+# X lables to 90 degrees 
+plt.xticks(rotation = 90)
+plt.ticklabel_format(style='plain', axis='y')
+
+fig, (maxis1, maxis2,maxis3) = plt.subplots(1, 3,figsize=(23,8))
+sns.barplot(x='Sectors',y='No of Investments',data=D1_US,ax = maxis1)
+maxis1.set_title("Top 3 Sector in US in venture FT")
+sns.barplot(x='Sectors',y='No of Investments',data=D2_GBR,ax = maxis2)
+maxis2.set_title("Top 3 Sector in GBR in venture FT")
+sns.barplot(x='Sectors',y='No of Investments',data=D3_India,ax = maxis3)
+maxis3.set_title("Top 3 Sector in India in venture FT")
+for ax in fig.axes:
+    plt.sca(ax)
+    plt.xticks(rotation=45)
+    

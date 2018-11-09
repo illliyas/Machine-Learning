@@ -1,3 +1,12 @@
+Best
+https://ml-cheatsheet.readthedocs.io/en/latest/
+https://github.com/nuhu122014/pandas_exercises
+https://github.com/zhiwehu/Python-programming-exercises/blob/master/100%2B%20Python%20challenging%20programming%20exercises.txt
+------------
+https://github.com/bfortuner/ml-cheatsheet
+https://github.com/TarrySingh
+https://github.com/jupyter/jupyter/wiki/A-gallery-of-interesting-Jupyter-Notebooks
+
 https://www.kaggle.com/fabiendaniel/predicting-flight-delays-tutorial/notebook
 https://www.kaggle.com/nicapotato/titanic-voting-pipeline-stack-and-guide
 https://www.kaggle.com/nicapotato/kernels

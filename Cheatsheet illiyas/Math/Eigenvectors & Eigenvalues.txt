@@ -1,0 +1,18 @@
+# Import the right libraries required
+
+import numpy as np
+
+from numpy import linalg as LA
+
+
+# Declare the covariance matrix
+
+cov = np.matrix([[4, 9], [7, 6]])
+
+
+eigenvalue, eigenvector = LA.eig(cov)
+
+
+print ("The eigenvalues are \n", eigenvalue)
+
+print ("The eigenvectors are\n", eigenvector)

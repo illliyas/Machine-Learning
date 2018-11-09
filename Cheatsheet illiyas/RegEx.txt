@@ -1,3 +1,12 @@
+#To search a string in pandas column
+data[data['submission'].str.contains("zip")]
+
+#Remove strings from column 
+data=data[data.Runs.apply(lambda x: x.isnumeric())]
+
+
+data['result'] = data['result'].map(lambda x: x.lstrip('+-').rstrip('aAbBcC'))
+
 import re
 
 currency=['1200AED','AED130','USD1434','2343INR','3643','SFGKJ','ABC']
