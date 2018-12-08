@@ -1,3 +1,37 @@
 SelectFromModel - https://www.kaggle.com/ayaseeli/feature-selection
 Boruta https://www.kaggle.com/tilii7/boruta-feature-elimination
 https://www.kaggle.com/ramakrishnar/an-exploratory-study-on-feature-selection/notebook
+
+RFE:
+https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html
+>>> from sklearn.datasets import make_friedman1
+>>> from sklearn.feature_selection import RFE
+>>> from sklearn.svm import SVR
+>>> X, y = make_friedman1(n_samples=50, n_features=10, random_state=0)
+>>> estimator = SVR(kernel="linear")
+>>> selector = RFE(estimator, 5, step=1)
+>>> selector = selector.fit(X, y)
+>>> selector.support_ 
+array([ True,  True,  True,  True,  True, False, False, False, False,
+       False])
+>>> selector.ranking_
+array([1, 1, 1, 1, 1, 6, 4, 3, 2, 5])
+-------------------
+# Importing RFE and LinearRegression
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import LinearRegression
+# Running RFE with the output number of the variable equal to 10
+lm = LinearRegression()
+lm.fit(X_train, y_train)
+
+rfe = RFE(lm, 10)             # running RFE
+rfe = rfe.fit(X_train, y_train)
+list(zip(X_train.columns,rfe.support_,rfe.ranking_))
+-------------------
+PCA
+----------------
+PLS
+---------------
+AIC
+---------------
+Lasso

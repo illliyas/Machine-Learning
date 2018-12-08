@@ -1,0 +1,9 @@
+#Linear Regression
+import statsmodels.api as sm
+
+# Add a constant
+X_train_lm = sm.add_constant(X_train[['area']])
+
+# Create a first fitted model
+lr = sm.OLS(y_train, X_train_lm).fit()
+

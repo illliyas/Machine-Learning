@@ -1,0 +1,16 @@
+# Implement gradient descent function
+# Takes in X, y, current m and c (both initialised to 0), num_iterations, learning rate
+# returns gradient at current m and c for each pair of m and c
+
+def gradient(X, y, m_current=0, c_current=0, iters=1000, learning_rate=0.01):
+    N = float(len(y))
+    gd_df = pd.DataFrame( columns = ['m_current', 'c_current','cost'])
+    for i in range(iters):
+        y_current = (m_current * X) + c_current
+        cost = sum([data**2 for data in (y-y_current)]) / N
+        m_gradient = -(2/N) * sum(X * (y - y_current))
+        c_gradient = -(2/N) * sum(y - y_current)
+        m_current = m_current - (learning_rate * m_gradient)
+        c_current = c_current - (learning_rate * c_gradient)
+        gd_df.loc[i] = [m_current,c_current,cost]
+    return(gd_df)

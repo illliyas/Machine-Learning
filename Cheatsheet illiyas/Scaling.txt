@@ -1,0 +1,9 @@
+le = LabelEncoder()
+for var in categorical_variables:
+      train[var] = le.fit_transform(train[var])
+
+###
+### after model building and testing step
+###
+
+predictions_test = le.inverse_transform(prediction_test)

@@ -1,0 +1,13 @@
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+le = LabelEncoder()
+onehot_encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
+data_carbody=pd.read_csv('CarPrice_Assignment.csv')
+data_carbody['carbody_le']=pd.DataFrame(le.fit_transform(data_carbody['carbody']),columns=['carbody_le'])
+pd.DataFrame(onehot_encoder.fit_transform(data_carbody[['carbody_le']]))
+
+data_carbody=pd.read_csv('CarPrice_Assignment - Copy.csv')
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+onehot_encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
+le = LabelEncoder()
+data_carbody['carbody_le']=pd.DataFrame(le.fit_transform(data_carbody['carbody']),columns=['carbody_le'])
+pd.DataFrame(onehot_encoder.transform(data_carbody[['carbody_le']]))

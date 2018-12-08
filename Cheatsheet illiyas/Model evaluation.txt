@@ -1,0 +1,24 @@
+#RMSE, r2_score
+from sklearn.metrics import mean_square_error,r2_score
+np.sqrt(mean_square_error(y_test,y_pred))
+r_square=r2_score(y_test,y_pred)
+
+# Create confusion matrix
+confusion = metrics.confusion_matrix(y_train_pred_final.Churn, y_train_pred_final.predicted)
+
+# Calculate accuracy
+print(metrics.accuracy_score(y_train_pred_final.Churn, y_train_pred_final.predicted))
+
+#roc_curve
+fpr, tpr, thresholds = metrics.roc_curve( actual, probs,drop_intermediate = False )
+
+#auc score
+auc_score = metrics.roc_auc_score( actual, probs )
+
+#precision_score (TP / TP + FP) & recall (Same as Sensitivtity TP / TP + FN)
+from sklearn.metrics import precision_score, recall_score
+precision_score(y_train_pred_final.Churn, y_train_pred_final.predicted)
+recall_score(y_train_pred_final.Churn, y_train_pred_final.predicted)
+
+#F1 score
+F1 Score = 2*((precision*recall)/(precision+recall))
