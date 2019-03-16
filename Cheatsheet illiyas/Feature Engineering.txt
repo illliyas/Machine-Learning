@@ -258,3 +258,33 @@ data1=data[['REC_LOCATOR','CHILD_PNRS']]
 data1.set_index('REC_LOCATOR',inplace=True)
 data1=data1.CHILD_PNRS.str.split(',',expand=True).stack().reset_index('REC_LOCATOR')
 data1.to_csv('Parent_Child.csv',index=False)
+-----------
+numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+
+newdf = df.select_dtypes(include=numerics)
+----------
+sepcols = [x for x in highvalue_customers.columns if 'sep_' in x]
+----------
+corrmat = np.corrcoef(moucols_6_data.transpose())
+corrmat_nodiag = corrmat - np.diagflat(corrmat.diagonal())
+print("max corr:",corrmat_nodiag.max(), ", min corr: ", corrmat_nodiag.min(),)
+-------------
+def correlation(dataset, threshold):
+    col_corr = set() # Set of all the names of deleted columns
+    corr_matrix = dataset.corr()
+    for i in range(len(corr_matrix.columns)):
+        for j in range(i):
+            if corr_matrix.iloc[i, j] >= threshold:
+                colname = corr_matrix.columns[i] # getting the name of column
+                col_corr.add(colname)
+                if colname in dataset.columns:
+                    del dataset[colname] # deleting the column from the dataset
+    print(col_corr)
+    print(dataset)
+correlation(moucols_6_data,.80)
+----------
+import pandas as pd
+pd.set_option('display.height', 1000)
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)

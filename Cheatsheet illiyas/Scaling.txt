@@ -1,3 +1,7 @@
+from sklearn.preprocessing import StandardScaler
+standard_scaler = StandardScaler()
+RFM_norm1 = standard_scaler.fit_transform(RFM_norm1)
+
 le = LabelEncoder()
 for var in categorical_variables:
       train[var] = le.fit_transform(train[var])

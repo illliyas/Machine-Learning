@@ -1,0 +1,17 @@
+Logistic Regression:
+import statsmodels.api as sm
+# Logistic regression model
+logm1 = sm.GLM(y_train,(sm.add_constant(X_train)), family = sm.families.Binomial())
+logm1.fit().summary()
+from sklearn.feature_selection import RFE
+rfe = RFE(logreg, 15)             # running RFE with 13 variables as output
+rfe = rfe.fit(X_train, y_train)
+rfe.support_
+list(zip(X_train.columns, rfe.support_, rfe.ranking_))
+col = X_train.columns[rfe.support_]
+
+from sklearn.linear_model import LogisticRegression
+logreg = LogisticRegression()
+from sklearn.feature_selection import RFE
+rfe = RFE(logreg, 15)             # running RFE with 13 variables as output
+rfe = rfe.fit(X_train, y_train)
