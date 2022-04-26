@@ -288,3 +288,10 @@ pd.set_option('display.height', 1000)
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
+
+pd.to_datetime(data['submit_time'],format='%m/%d/%y-%H:%M:%S')
+data['PNR_CREATION_YEAR']=data.PNR_CREATION_DATE.dt.year
+data['PNR_CREATION_MONTH']=data.PNR_CREATION_DATE.dt.month
+data['PNR_CREATION_Y0M'] = data[['PNR_CREATION_YEAR','PNR_CREATION_MONTH']].dot([100,1])
+df['C'] = (df['B'] - df['A']).dt.days
+data['issue_yearmonth']=(data['issue_d'].dt.year*100)+data['issue_d'].dt.month
