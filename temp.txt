@@ -1,0 +1,290 @@
+# Importing Libraries
+import numpy as np
+import pandas as pd
+#Reading Group_Pnr.csv and Gwp_Details.csv
+group_pnr=pd.read_csv('Group_Pnr.csv')
+Gwp_Details=pd.read_csv('Gwp_Details.csv')
+#Merging Group_Pnr.csv and Gwp_Details.csv with Group request ID
+#Ignoring null GWS_ID by performing inner join
+data=pd.merge(group_pnr,Gwp_Details,how='inner',left_on='GWS_ID',right_on='REQUEST_ID')
+#Remove all non-relavant columns from the dataframe
+data.drop(['GYM_ID','PCC','GWS_ID','REQUEST_ID','COMMISSION_PERCENTAGE','COUNTRY_POS','CHANNEL','CREATED_BY','PNR'],axis=1,inplace=True)
+
+#Feature1: Segment_Count
+# Function defined to find number of segments from FIRST_SEGMENTS_DTL column
+import re
+at = re.compile(r"-", re.I)
+def count_hypen(string):
+    count = 0
+    for i in at.finditer(string):
+        count += 1
+    return count
+data["Segment_Count"] = data["FIRST_SEGMENTS_DTL"].map(count_hypen)
+
+#Convert Date columns to data datype
+data['REQUEST_DATE_TIME'] = pd.to_datetime(data['REQUEST_DATE_TIME'],format='%d/%m/%y')
+data['FIRST_DEPARTURE_DATE'] = pd.to_datetime(data['FIRST_DEPARTURE_DATE'],format='%d/%m/%y')
+data['PNR_CREATION_DATE'] = pd.to_datetime(data['PNR_CREATION_DATE'],format='%d/%m/%y')
+
+#Feature2: Diff b/w PNR date and Request date
+data['PNRminusRequest']=(data['PNR_CREATION_DATE']-data['REQUEST_DATE_TIME']).astype('timedelta64[D]')
+#Feature3: Diff b/w First Deparure date and Request date
+data['FirstminusRequest']=(data['FIRST_DEPARTURE_DATE']-data['REQUEST_DATE_TIME']).astype('timedelta64[D]')
+#Feature4: Diff b/w First Deparure date and PNRs date
+data['FirstminusPNR']=(data['FIRST_DEPARTURE_DATE']-data['PNR_CREATION_DATE']).astype('timedelta64[D]')
+
+#Feature5: Slice the FIRST_SEGMENTS_DTL to get first booked sector
+data['FIRST_SEGMENTS_DTL']=data['FIRST_SEGMENTS_DTL'].str.slice(0,6)
+#Feature6: Month from First Departure Date
+data['FIRST_DEPARTURE_DATE_M']=data['FIRST_DEPARTURE_DATE'].dt.month
+#Feature7: Month from Request Departure Date
+data['REQUEST_DATE_TIME_M']=data['REQUEST_DATE_TIME'].dt.month
+
+#Feature8: Based on the analysis by FLOWN and CANCELLED variance countries are classified into 8 buckets 
+
+CTRY1=['BG', 'ZM', 'ET', 'BD', 'QA', 'PK', 'PR', 'SK', 'CI', 'BO', 'HU', 'IQ']
+CTRY2=['TZ', 'SN', 'AF', 'SC', 'RO', 'ZW', 'CZ', 'SA', 'TH', 'IR', 'JO', 'KH']
+CTRY3=['RU', 'ES', 'TW', 'LY', 'DE', 'NL', 'CN', 'JP', 'UG', 'IT', 'AO', 'HK']
+CTRY4=['KR', 'BH', 'KW', 'DZ', 'IN', 'AR', 'MM', 'KE', 'UA', 'EC', 'RS', 'NZ']
+CTRY5=['HR', 'AU', 'LK', 'GH', 'EG', 'PL', 'TR', 'GN', 'SG', 'SD', 'VN', 'US']
+CTRY6=['ZA', 'MY', 'MA', 'AE', 'NG', 'IE', 'CH', 'ID', 'GR', 'AT', 'FR', 'DK']
+CTRY7=['GB', 'MU', 'CO', 'PE', 'NO', 'SE', 'PY', 'LB', 'BE', 'MV', 'PA', 'OM']
+CTRY8=['PT', 'MT', 'MX', 'PH', 'UY', 'SI', 'TN', 'CY', 'CA', 'BR', 'CL']
+def country_check(string):
+    if string in CTRY1:
+        return 1
+    elif string in CTRY2:
+        return 2
+    elif string in CTRY3:
+        return 3
+    elif string in CTRY4:
+        return 4
+    elif string in CTRY5:
+        return 5
+    elif string in CTRY6:
+        return 6
+    elif string in CTRY7:
+        return 7
+    elif string in CTRY8:
+        return 8
+    else:
+        return -1
+data['COUNTRY']=data['COUNTRY'].map(country_check)
+
+#Import LabelEncoder to convert string to numbers
+from sklearn.preprocessing import LabelEncoder
+le=LabelEncoder()
+#Featues: Convert below categories into numbers
+data['REQUEST_TYPE']=le.fit_transform(data['REQUEST_TYPE'].fillna(value='-1'))
+data['REQUEST_SUB_TYPE']=le.fit_transform(data['REQUEST_SUB_TYPE'].fillna(value='-1'))
+data['RQST_CREATION_USER_TYPE']=le.fit_transform(data['RQST_CREATION_USER_TYPE'].fillna(value='-1'))
+data['FIRST_SEGMENTS_DTL']=le.fit_transform(data['FIRST_SEGMENTS_DTL'].fillna(value='-1'))
+data['CURRENCY']=le.fit_transform(data['CURRENCY'])
+
+#Remove all non-relavant columns from the dataframe
+data.drop(['REQUEST_DATE_TIME','CITY','GDS','TRAVEL_CLASS'],axis=1,inplace=True)
+
+#Define Data Cleaning function for Agent_Master.csv  
+def read_agent():
+    print("Agent available")
+    #Reading Agent_Master.csv
+    Agent_Master=pd.read_csv('Agent_Master.csv')
+    #Featues: Convert below categories into numbers
+    Agent_Master['AGENT_TYPE']=le.fit_transform(Agent_Master['AGENT_TYPE'].fillna(value='-1'))
+    Agent_Master['AGENT_CATEGORY']=le.fit_transform(Agent_Master['AGENT_CATEGORY'].fillna(value='-1'))
+    Agent_Master['SALES_CHANNEL_SK']=le.fit_transform(Agent_Master['SALES_CHANNEL_SK'].fillna(value='-1'))
+    Agent_Master['LIFE_CYCLE_STATUS']=le.fit_transform(Agent_Master['LIFE_CYCLE_STATUS'].fillna(value='-1'))
+    Agent_Master['IATA_ORIGINAL_CLASS']=le.fit_transform(Agent_Master['IATA_ORIGINAL_CLASS'].fillna(value='-1'))
+    Agent_Master['IATA_LOCATION_TYPE']=le.fit_transform(Agent_Master['IATA_LOCATION_TYPE'].fillna(value='-1'))
+    Agent_Master['IATA_COMPANY_TYPE']=le.fit_transform(Agent_Master['IATA_COMPANY_TYPE'].fillna(value='-1'))
+    #Remove all non-relavant columns from the dataframe
+    Agent_Master.drop(['GEO_LOCATION_SK','AGENT_REPORTING_CURRENCY','ASSOC_SALES_EXECUTIVE_STAFFID','AGENT_CITY_NAME','GBL_AGENCY_CHAIN_SK','COUNTRY_ISO_CODE','SALES_TERRITORY'],axis=1,inplace=True)
+    # Remove Duplicate record from data frame
+    Agent_Master = Agent_Master.drop_duplicates()
+    print("Agent processed")
+    return Agent_Master
+
+#Define Data Cleaning function for GROUP_BKNG_PNR_TLT.csv  
+def read_TLT():
+    print("TLT available")
+    #Reading Agent_Master.csv
+    GROUP_BKNG_PNR_TLT=pd.read_csv('GROUP_BKNG_PNR_TLT.csv')
+    #Convert Action Date to data datype
+    GROUP_BKNG_PNR_TLT['ACTION_DATE'] = pd.to_datetime(GROUP_BKNG_PNR_TLT['ACTION_DATE'],format='%d/%m/%y')
+    GROUP_BKNG_PNR_TLT['BOOKING_DATE'] = pd.to_datetime(GROUP_BKNG_PNR_TLT['BOOKING_DATE'],format='%d/%m/%y')
+    #Feature: Number of actions by PNR
+    GROUP_BKNG_PNR_TLT_COUNT=GROUP_BKNG_PNR_TLT.groupby('PNR').count()[['ACTION_DATE']]
+    GROUP_BKNG_PNR_TLT_COUNT.rename(columns={'ACTION_DATE': 'TLT_ACTION_DATE_COUNT'}, inplace=True)
+    #Get latest record by PNR
+    GROUP_BKNG_PNR_TLT_MAX=GROUP_BKNG_PNR_TLT.groupby('PNR').max()
+    #Concat COUNT and MAX dataframe
+    GROUP_BKNG_PNR_TLT=pd.concat([GROUP_BKNG_PNR_TLT_MAX,GROUP_BKNG_PNR_TLT_COUNT],axis=1)
+    #Select only the Number of actions and Latest Action Date
+    GROUP_BKNG_PNR_TLT=GROUP_BKNG_PNR_TLT[['TLT_ACTION_DATE_COUNT','ACTION_DATE','BOOKING_DATE']]
+    GROUP_BKNG_PNR_TLT.reset_index(inplace=True)
+    # Remove Duplicate record from data frame
+    GROUP_BKNG_PNR_TLT = GROUP_BKNG_PNR_TLT.drop_duplicates()
+    print("TLT processed")
+    return GROUP_BKNG_PNR_TLT
+
+def read_PAX_HIST():
+    print("PAX_HIST available")
+    #Reading GROUP_BKNG_PNR_PAX_HIST.csv
+    GROUP_BKNG_PNR_PAX_HIST=pd.read_csv('GROUP_BKNG_PNR_PAX_HIST.csv')
+    #Convert Action Date to data datype
+    GROUP_BKNG_PNR_PAX_HIST['ACTION_DATE'] = pd.to_datetime(GROUP_BKNG_PNR_PAX_HIST['ACTION_DATE'],format='%d/%m/%y')
+    GROUP_BKNG_PNR_PAX_HIST['BOOKING_DATE'] = pd.to_datetime(GROUP_BKNG_PNR_PAX_HIST['BOOKING_DATE'],format='%d/%m/%y')
+    #Latest Action Date by PNR
+    GROUP_BKNG_PNR_PAX_HIST_MAX=GROUP_BKNG_PNR_PAX_HIST.groupby('PNR').max()
+    #Feature: Number of passenger Name added
+    GROUP_BKNG_PNR_PAX_HIST_COUNT=GROUP_BKNG_PNR_PAX_HIST.groupby('PNR').count()[['PAX_INDIVIDUAL_NAME']]
+    #Renaming the column
+    GROUP_BKNG_PNR_PAX_HIST_COUNT.rename(columns={'PAX_INDIVIDUAL_NAME': 'PAX_INDIVIDUAL_NAME_COUNT'}, inplace=True)
+    #Concat Latest Action Date and Number of passenger 
+    GROUP_BKNG_HST=pd.concat([GROUP_BKNG_PNR_PAX_HIST_MAX,GROUP_BKNG_PNR_PAX_HIST_COUNT],axis=1)
+    #Feature: All Passenger Name added or not
+    GROUP_BKNG_HST['Name_Added']=(GROUP_BKNG_HST['PAX_INDIVIDUAL_NAME_COUNT']>GROUP_BKNG_HST['PAX_NUM']).astype(int)
+    #Feature: If Passenger Name starts only with / 
+    GROUP_BKNG_HST['Agent_Passenger']=(GROUP_BKNG_HST['PAX_INDIVIDUAL_NAME'].str.startswith('/', na=False)).astype(int)
+    #Remove all non-relavant columns from the dataframe
+    GROUP_BKNG_HST.drop(['ACTION_CODE','PAX_NUM','PAX_INDIVIDUAL_NAME'],axis=1,inplace=True)
+    GROUP_BKNG_HST.reset_index(inplace=True)
+    print("PAX_HIST processed")
+    return GROUP_BKNG_HST
+
+def read_PNR_TICKET():
+    print("PNR TICKET available")
+    #Reading Group_BKNG_PNR_TICKET.csv
+    Group_BKNG_PNR_TICKET=pd.read_csv('Group_BKNG_PNR_TICKET.csv')
+    #Convert Issue Date and Deoarture date to data datype
+    Group_BKNG_PNR_TICKET['ISSUE_DATE'] = pd.to_datetime(Group_BKNG_PNR_TICKET['ISSUE_DATE'],format='%d/%m/%y')
+    Group_BKNG_PNR_TICKET['DEPARTURE_DATE'] = pd.to_datetime(Group_BKNG_PNR_TICKET['DEPARTURE_DATE'],format='%d/%m/%y')
+    Group_BKNG_PNR_TICKET['PNR_CREATION_DATE'] = pd.to_datetime(Group_BKNG_PNR_TICKET['PNR_CREATION_DATE'],format='%d/%m/%y')
+    #Take First Departure date
+    Group_BKNG_PNR_TICKET_MIN=Group_BKNG_PNR_TICKET.groupby('PNR').min()
+    #Diff of Departure Date and Issue Date
+    Group_BKNG_PNR_TICKET_MIN['TicketDateDiff']=(Group_BKNG_PNR_TICKET_MIN['DEPARTURE_DATE']-Group_BKNG_PNR_TICKET_MIN['ISSUE_DATE']).astype('timedelta64[D]')
+    Group_BKNG_PNR_TICKET=Group_BKNG_PNR_TICKET_MIN[['TicketDateDiff','PNR_CREATION_DATE']]
+    Group_BKNG_PNR_TICKET.reset_index(inplace=True)
+    print("PNR TICKET processed")
+    return Group_BKNG_PNR_TICKET
+       
+#Check if Agent file exist and call Data cleaning function
+import os.path
+if os.path.exists('Agent_Master.csv'):
+    Agent_Master=read_agent()
+    #Merge the agent with previous processed data
+    data=pd.merge(data,Agent_Master,how='left',left_on='inc_agent_no',right_on='INC_AGENT_CODE')
+    #Drop the key's
+    data.drop(['INC_AGENT_CODE'],axis=1,inplace=True)
+else:
+    print("Agent not available")
+    #If Agent file is not available assign -1 for all the Agent features
+    Agent_Master['AGENT_TYPE']=-1
+    Agent_Master['AGENT_CATEGORY']=-1
+    Agent_Master['SALES_CHANNEL_SK']=-1
+    Agent_Master['LIFE_CYCLE_STATUS']=-1
+    Agent_Master['IATA_ORIGINAL_CLASS']=-1
+    Agent_Master['IATA_LOCATION_TYPE']=-1
+    Agent_Master['IATA_COMPANY_TYPE']=-1
+
+#Check if Agent file exist and call Data cleaning function
+if os.path.exists('GROUP_BKNG_PNR_TLT.csv'):
+    GROUP_BKNG_PNR_TLT=read_TLT()
+    #Merge the TLT with previous processed data
+    data=pd.merge(data,GROUP_BKNG_PNR_TLT,how='left',left_on=['REC_LOCATOR','PNR_CREATION_DATE'],right_on=['PNR','BOOKING_DATE'])
+    data['FirstminusTTL']=(data['FIRST_DEPARTURE_DATE']-data['ACTION_DATE']).astype('timedelta64[D]')
+    #Drop the non feature column and key 
+    data.drop(['ACTION_DATE','BOOKING_DATE','PNR'],axis=1,inplace=True)
+else:
+    print("TLT not available")
+    #If TLT file is not available assign -1 for all the TLT features
+    data['FirstminusTTL']=-1
+    data['TLT_ACTION_DATE_COUNT']=-1
+
+if os.path.exists('GROUP_BKNG_PNR_PAX_HIST.csv'):
+    GROUP_BKNG_HST=read_PAX_HIST()
+    #Merge the TLT with previous processed data
+    data=pd.merge(data,GROUP_BKNG_HST,how='left',left_on=['REC_LOCATOR','PNR_CREATION_DATE'],right_on=['PNR','BOOKING_DATE'])
+    data['FirstminusHST']=(data['FIRST_DEPARTURE_DATE']-data['ACTION_DATE']).astype('timedelta64[D]')
+    #Drop the non feature column and key 
+    data.drop(['ACTION_DATE','PNR','BOOKING_DATE'],axis=1,inplace=True)
+else:
+    print("PAX_HIST not available")
+    #If TLT file is not available assign -1 for all the TLT features
+    data['FirstminusHST']=-1
+    data['PAX_INDIVIDUAL_NAME_COUNT']=-1
+    data['Name_Added']=-1
+    data['Agent_Passenger']=-1
+
+if os.path.exists('Group_BKNG_PNR_TICKET.csv'):
+    Group_BKNG_PNR_TICKET=read_PNR_TICKET()
+    #Merge the PNR Ticket with previous processed data
+    data=pd.merge(data,Group_BKNG_PNR_TICKET,how='left',left_on=['REC_LOCATOR','PNR_CREATION_DATE'],right_on=['PNR','PNR_CREATION_DATE'])
+    data.drop(['PNR'],axis=1,inplace=True)
+else:
+    print("PNR TICKET not available")
+    #If PNR Ticket file is not available assign -1 for all the PNR Ticket features
+    data['TicketDateDiff']=-1
+
+#Drop the non feature column and key 
+data.drop(['inc_agent_no','REC_LOCATOR','FIRST_DEPARTURE_DATE','PNR_CREATION_DATE'],axis=1,inplace=True)
+#Convert FLOWN as 1 and CANCELLED as 0
+data['TARGET']=le.fit_transform(data['PNR_TYPE'])
+data.drop('PNR_TYPE',axis=1,inplace=True)
+#Fill null values with -1 if there are any
+data.fillna(value=-1,inplace=True)
+
+#Scale all the features between -1 and 1
+#Split the data in X and Y.
+#Where X= Featues and Y=TARGET
+from sklearn.preprocessing import StandardScaler
+scaler=StandardScaler()
+scaler.fit(data.drop('TARGET',axis=1))
+scaler_feature=scaler.transform(data.drop('TARGET',axis=1))
+X=pd.DataFrame(scaler_feature,columns=data.columns[:-1])
+Y=data['TARGET']
+
+#Split the training and test data
+from sklearn.model_selection import train_test_split
+X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.3,random_state =11)
+
+#Run the model
+from sklearn.ensemble import RandomForestClassifier
+rfc=RandomForestClassifier(n_estimators=200)
+print("Model is fitting")
+rfc.fit(X_train,Y_train)
+print("Model is predicting")
+predict_rfc=rfc.predict(X_test)
+
+
+from sklearn.metrics import classification_report,confusion_matrix
+print(classification_report(Y_test,predict_rfc))
+"""
+             precision    recall  f1-score   support
+
+          0       0.99      1.00      0.99     29311
+          1       0.99      0.95      0.97      6032
+
+avg / total       0.99      0.99      0.99     35343
+"""
+print(confusion_matrix(Y_test,predict_rfc))
+"""
+[[29270    41]
+ [  285  5747]]
+"""
+#Get the feature score
+print(sorted(zip(map(lambda x: round(x, 4), rfc.feature_importances_), X.columns),reverse=True))
+"""
+[(0.2521, 'TicketDateDiff'), (0.2019, 'Name_Added'), (0.1892, 'PAX_INDIVIDUAL_NAME_COUNT'), (0.1392, 'Agent_Passenger'), (0.0825, 'FirstminusHST'), (0.0394, 'FirstminusTTL'), (0.0134, 'FirstminusPNR'), (0.0099, 'FirstminusRequest'), (0.0079, 'ADULT_FARE'), (0.0067, 'PROPOSED_FARE'), (0.0051, 'COUNTRY'), (0.0048, 'TLT_ACTION_DATE_COUNT'), (0.0043, 'PAX'), (0.0043, 'FIRST_SEGMENTS_DTL'), (0.0039, 'ACCEPTED_GROUP_SIZE'), (0.0038, 'ADULT_COUNT'), (0.0037, 'ACC_ADULT'), (0.0036, 'GROUP_SIZE'), (0.0033, 'FIRST_DEPARTURE_DATE_M'), (0.0032, 'REQUEST_DATE_TIME_M'), (0.0029, 'PNRminusRequest'), (0.0022, 'CURRENCY'), (0.0019, 'SALES_CHANNEL_SK'), (0.0017, 'Segment_Count'), (0.0016, 'AGENT_CATEGORY'), (0.0015, 'IATA_COMPANY_TYPE'), (0.0009, 'IATA_ORIGINAL_CLASS'), (0.0009, 'AGENT_TYPE'), (0.0007, 'IATA_LOCATION_TYPE'), (0.0006, 'REQUEST_TYPE'), (0.0006, 'REQUEST_SUB_TYPE'), (0.0005, 'LIFE_CYCLE_STATUS'), (0.0004, 'NEGOTIATION_CYCLE_NO'), (0.0004, 'CHILD_FARE'), (0.0003, 'CHILD_COUNT'), (0.0003, 'ACC_CHILD'), (0.0002, 'RQST_CREATION_USER_TYPE'), (0.0001, 'INFANT_FARE'), (0.0, 'INFANT_COUNT'), (0.0, 'ACC_INF')]
+"""
+
+    
+# save the model to disk
+"""import pickle
+filename = 'RFC.pkl'
+print("Saving Model")
+pickle.dump(rfc, open(filename, 'wb'))"""
+
+
+
